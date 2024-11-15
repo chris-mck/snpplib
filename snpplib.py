@@ -225,9 +225,12 @@ class SNPP:
         """ Returns Help information """
         ( code, msg ) = self._HELP()
         if ( code == 214 ):
-            helpmsg = ""
+            helpmsg = b""
         while ( code == 214 ):
-            helpmsg = string.join([helpmsg,msg],"\n")
+            l = []
+            l.append(helpmsg)
+            l.append(msg)
+            helpmsg = b"\n".join(l)
             ( code, msg ) = self._getreply()
         return ( code, helpmsg )
 
@@ -321,31 +324,13 @@ if __name__=='__main__':
 
     debuglevel=1
     s=SNPP(debuglevel=debuglevel)
-    s.close()
-    lines="""This is a test page
-I want to see about multiple lines
-I don't see any reason why this shouldn't work
-    """
-    print(s.pager(id='5551212',pin='1111'))
-    print(s.level('0'))
-    #print(s.coverage('0'))
-    print(s.holduntil('001231120000 +0100'))
-    print(s.callerid('Monty'))
-    print(s.login(login="mtaylor",password="password"))
-    print(s.data(lines=lines))
     try:
+      print(s.pager(id='500a'))
       print(s.message(msg='This is a test page from Python'))
     except (SNPPResponseException, args):
       print(args.snpp_code, args.snpp_error);
     print(s.send())
-    print(s.reset())
-    try:
-      print(s.pager(id='5551212'))
-      print(s.message(msg='This is a test page from Python'))
-    except (SNPPResponseException, args):
-      print(args.snpp_code, args.snpp_error);
     (code, msg) =  s.help()
     print(msg)
-    print(s.send())
     print(s.quit())
     s.close()
