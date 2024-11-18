@@ -128,7 +128,10 @@ class Pager:
             ( tag, pass_code, msg ) = string.split(msg,None,3)
             return _SentPage(code=code, tag=tag, pass_code=pass_code, msg=msg, server=self.server)
 
-        self.server.data(self.message.get_message())
+        # FIXME: DATA commands need the SNPP server to implement it, which we should track before trying!
+        # DATA command needs level 2 or higher
+        #self.server.data(self.message.get_message())
+        self.server.message(self.message.get_message())
         (code, msg) = self.server.send()
         return Response(seed=code, text=msg)
 
@@ -335,28 +338,16 @@ if __name__=='__main__':
 
     #server=SNPP(host=host, port=port, debuglevel=debuglevel)
 
-    bob=Recipient(id='5551212')
-    larry=Recipient(id='4773822',pin='9999')
-    larry.send_now()
+    bob=Recipient(id='500a')
+    larry=Recipient(id='502a')
 
-    mess=Message(message='The server is down')
-    mess.set_hold('001231101103')
-    #mess.set_subject(subject='HELP')
+    mess=Message(message='Pager test from Python')
 
     page=Pager( recips=[bob], message=mess, host=host, port=port, debuglevel=debuglevel)
-    page.add_recipient(bob)
+    page.add_recipient(larry)
    
     page1=page.send()
-    print type(page1)
+    print(type(page1))
 
-    mess.set_message(message="Wow! It's really down this time")
-
-    mess.set_twoway()
-    spam=Recipient(id='1234567')
-    eggs=Recipient(id='0877639184')
-    page.add_recipient([spam, eggs])
-    page.del_recipient(bob)
-    page2=page.send()
-    print type(page2)
     page.quit()
 
